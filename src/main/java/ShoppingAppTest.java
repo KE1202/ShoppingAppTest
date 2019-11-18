@@ -1,10 +1,10 @@
-package com.ke.project;
 
 import java.net.MalformedURLException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -58,15 +58,18 @@ public class ShoppingAppTest {
 		// test login success and failure (toastMessage)
 
 		testLogIn(driver);
+		// testAddingItems(driver);
 
 	}
 
 	private static void testLogIn(AndroidDriver<AndroidElement> driver) {
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		driver.findElementByXPath("//android.widget.TextView [@ text = 'Afghanistan']").click();
-		driver.findElementByAndroidUIAutomator("new UiScrollable(new UiSelector()).scrollIntoView(text(\"Antarctica\"));");
+		driver.findElementByAndroidUIAutomator(
+				"new UiScrollable(new UiSelector()).scrollIntoView(text(\"Antarctica\"));");
 		driver.findElementByXPath("//android.widget.TextView [@text = 'Antarctica']").click();
 		driver.findElement(By.id("com.androidsample.generalstore:id/nameField")).sendKeys("FirstName and LastName");
+		driver.hideKeyboard();
 		driver.findElement(By.xpath("//*[@text='Female']")).click();
 		driver.findElement(By.id("com.androidsample.generalstore:id/btnLetsShop")).click();
 
@@ -92,12 +95,58 @@ public class ShoppingAppTest {
 
 		try {
 			Thread.sleep(5000);
-			
+
 		} catch (InterruptedException e) {
 
 			e.printStackTrace();
 
 		}
-		driver.quit();
+		// driver.quit();
+//	}
+//
+//
+//	private static void testAddingItems(AndroidDriver<AndroidElement> driver) {
+//		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+//		driver.findElementByXPath("//android.widget.TextView [@ text = 'Afghanistan']").click();
+//		driver.findElementByAndroidUIAutomator(
+//				"new UiScrollable(new UiSelector()).scrollIntoView(text(\"Antarctica\"));");
+//		driver.findElementByXPath("//android.widget.TextView [@text = 'Antarctica']").click();
+//		driver.findElement(By.id("com.androidsample.generalstore:id/nameField")).sendKeys("FirstName and LastName");
+//		driver.findElement(By.xpath("//*[@text='Female']")).click();
+
+		driver.findElement(By.id("com.androidsample.generalstore:id/nameField")).sendKeys("FirstName and LastName");
+		driver.hideKeyboard();
+		driver.findElement(By.id("com.androidsample.generalstore:id/btnLetsShop")).click();
+
+		driver.findElement(MobileBy.AndroidUIAutomator(
+				"new UiScrollable(new UiSelector().resourceId(\"com.androidsample.generalstore:id/rvProductList\")).scrollIntoView(new UiSelector().textMatches(\"Jordan 6 Rings\").instance(0))"));
+
+		int count = driver.findElements(By.id("com.androidsample.generalstore:id/productName")).size();
+
+		for (int i = 0; i < count; i++)
+
+		{
+
+			String text = driver.findElements(By.id("com.androidsample.generalstore:id/productName")).get(i).getText();
+
+			if (text.equalsIgnoreCase("Jordan 6 Rings"))
+
+			{
+
+				driver.findElements(By.id("com.androidsample.generalstore:id/productAddCart")).get(i).click();
+
+				break;
+
+			}
+
+		}
+
+		driver.findElement(By.id("com.androidsample.generalstore:id/appbar_btn_cart")).click();
+
+		String lastpageText = driver.findElement(By.id("com.androidsample.generalstore:id/productName")).getText();
+
+		Assert.assertEquals("Jordan 6 Rings", lastpageText);
+
 	}
+
 }
