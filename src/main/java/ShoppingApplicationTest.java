@@ -3,6 +3,7 @@ import java.net.MalformedURLException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -46,7 +47,9 @@ public class ShoppingApplicationTest {
 			// runApkTests(driver);
 			// testLogInSuccess(driver);
 			// testLogInFailure(driver);
-			testAddingItems(driver);
+			// testAddingItems(driver);
+			testCheckingPrice(driver);
+			// testCheckBoxTermsOfCondition(driver);
 
 		} catch (MalformedURLException k) {
 			System.out.println(" hey this path is wrong with error :" + k.getLocalizedMessage());
@@ -55,8 +58,103 @@ public class ShoppingApplicationTest {
 		}
 	}
 
+	private static void testCheckBoxTermsOfCondition(AndroidDriver<AndroidElement> driver2) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private static void testCheckingPrice(AndroidDriver<AndroidElement> driver) {
+
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.findElementByXPath("//android.widget.TextView [@ text = 'Afghanistan']").click();
+		driver.findElementByAndroidUIAutomator(
+				"new UiScrollable(new UiSelector()).scrollIntoView(text(\"Antarctica\"));");
+		driver.findElementByXPath("//android.widget.TextView [@text = 'Antarctica']").click();
+		driver.findElement(By.id("com.androidsample.generalstore:id/nameField")).sendKeys("FirstName and LastName");
+		driver.hideKeyboard();
+		driver.findElement(By.xpath("//*[@text='Female']")).click();
+		driver.findElement(By.id("com.androidsample.generalstore:id/btnLetsShop")).click();
+
+		// run without this UiScrollable code first to see if the "add to cart" was
+		// showing on the screen. If not, need to select which item should be displayed
+		// (scrolllIntoView) to be able to add the item to the cart
+		driver.findElement(MobileBy.AndroidUIAutomator(
+				"new UiScrollable(new UiSelector().resourceId(\"com.androidsample.generalstore:id/rvProductList\")).scrollIntoView(new UiSelector().textMatches(\"Air Jordan 1 Mid SE\").instance(0))"));
+
+		driver.findElementsByXPath("//android.widget.TextView[@ text = 'ADD TO CART']").get(0).click();
+
+		driver.findElementsByXPath("//android.widget.TextView [@ text = 'ADD TO CART']").get(0).click();
+
+		int count = driver.findElements(By.id("com.androidsample.generalstore:id/productPrice")).size();
+
+		double expectedTotalAmount = 0;
+		for (int i = 0; i < count; i++) {
+			String itemAmount = driver.findElements(By.id("com.androidsample.generalstore:id/productPrice")).get(i)
+					.getText();
+			double addedTotalItemAmount = getAmount(itemAmount);
+			expectedTotalAmount = expectedTotalAmount + addedTotalItemAmount;
+
+		}
+		String numberOfItems = driver.findElement(By.id("com.androidsample.generalstore:id/counterText")).getText();
+		System.out.println(numberOfItems);
+		System.out.println("Expected Total Amount products:" + expectedTotalAmount);
+
+		driver.findElementById("com.androidsample.generalstore:id/appbar_btn_cart").click();
+
+		// if not getting the price amount before going to the cart page, need to add
+		// "Thread.sleep"/"try catch interruptedExceptioin e"
+		
+		
+
+//		Thread.sleep(4000);
+
+//		try {
+//			Thread.sleep(4000);
+//
+//		} catch (InterruptedException e) {
+//
+//			e.printStackTrace();
+//		}
+
+//
+
+//		int count = driver.findElements(By.id("com.androidsample.generalstore:id/productPrice")).size();
+//	double expectedTotalAmount = 0;
+//	for (int i=0; i <count; i++);
+//	{
+//	String itemAmount = driver.findElements(By.id("com.androidsample.generalstore:id/productPrice")).get(i).getText();
+//	double addedItemamount = getAmount(itemAmount);
+//	expectedTotalAmount = expectedTotalAmount + addedItemamount;	
+//}
+//System.out.println("Expected Total Amount products:" + expectedTotalAmount);
+//		
+
+		String total = driver.findElement(By.id("com.androidsample.generalstore:id/totalAmountLbl")).getText();
+		total = total.substring(1);
+		double computedCartTotal = Double.parseDouble(total);
+
+		System.out.println("Total value of products:" + computedCartTotal);
+
+		Assert.assertEquals(expectedTotalAmount, computedCartTotal, 0);
+
+		try {
+			Thread.sleep(5000);
+
+		} catch (InterruptedException e) {
+
+			e.printStackTrace();
+		}
+		driver.quit();
+	}
+
+	private static double getAmount(String itemAmount) {
+		itemAmount = itemAmount.substring(1);
+		double ItemAmountValue = Double.parseDouble(itemAmount);
+		return ItemAmountValue;
+		
+	}
+
 	private static void runApkTests(AndroidDriver<AndroidElement> driver) {
-		// test login success and failure (toastMessage)
 
 		testLogInSuccess(driver);
 		testLogInFailure(driver);
